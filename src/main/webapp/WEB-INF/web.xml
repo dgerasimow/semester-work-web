@@ -24,6 +24,11 @@
         <url-pattern>*.ftl</url-pattern>
     </servlet-mapping>
 
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>default</servlet-name>-->
+<!--        <url-pattern>/css/*</url-pattern>-->
+<!--    </servlet-mapping>-->
+
     <error-page>
         <error-code>404</error-code>
         <location>/404.html</location>

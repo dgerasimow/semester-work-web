@@ -14,14 +14,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO get(int id) {
         User user = dao.get(id);
-        return new UserDTO(user.getFirstName(), user.getSecondName(), user.getLogin(), user.getPassword());
+        return new UserDTO(user.getId(), user.getFirstName(), user.getSecondName(), user.getLogin(), user.getPassword());
     }
 
     @Override
     public UserDTO get(String login) {
         User user = dao.get(login);
         if (user != null) {
-            return new UserDTO(user.getFirstName(), user.getSecondName(), user.getLogin(), user.getPassword());
+            return new UserDTO(user.getId(), user.getFirstName(), user.getSecondName(), user.getLogin(), user.getPassword());
         } else {
             return null;
         }
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getAll() {
         List<User> users = dao.getAll();
         return users.stream()
-                .map(u -> new UserDTO(u.getFirstName(),u.getSecondName(),u.getLogin(),u.getPassword()))
+                .map(u -> new UserDTO(u.getId(), u.getFirstName(),u.getSecondName(),u.getLogin(),u.getPassword()))
                 .collect(Collectors.toList());
     }
 

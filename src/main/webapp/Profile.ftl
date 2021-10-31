@@ -8,5 +8,4 @@
         <p>Your last name ${user.secondName}</p>
     </#if>
 </#macro>
-<form action="/login"
 </html>

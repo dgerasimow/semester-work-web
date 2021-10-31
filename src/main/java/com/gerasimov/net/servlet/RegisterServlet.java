@@ -30,7 +30,7 @@ public class RegisterServlet extends HttpServlet {
                 req.getParameter("firstName"),
                 req.getParameter("lastName"),
                 req.getParameter("login"),
-                PasswordHelper.encrypt(req.getParameter("password"))
+                req.getParameter("password")
         );
         userService.save(userDTO);
         resp.sendRedirect("/login");
