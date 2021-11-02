@@ -77,16 +77,19 @@ public class LoginServlet extends HttpServlet {
                     resp.addCookie(userCookie);
                     LOGGER.info("создал куку с именем {} и значением {}",userCookie.getName(), userCookie.getValue());
                 }
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(loginFormValidate(login, password, user.getId()));
 
                 session.setAttribute("user", user);
-                resp.sendRedirect("/profile?id=" + user.getId());
+//                resp.sendRedirect("/profile?id=" + user.getId());
             } else {
                 LOGGER.info("Incorrect login or password");
                 req.getSession().setAttribute("isAuth", false);
 
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
-                resp.getWriter().write(loginFormValidate(login, password));
+                resp.getWriter().write(loginFormValidate(login, password,0));
 
             }
         } else {
@@ -95,12 +98,12 @@ public class LoginServlet extends HttpServlet {
 
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            resp.getWriter().write(loginFormValidate(login, password));
+            resp.getWriter().write(loginFormValidate(login, password,0));
         }
 
     }
 
-    private String loginFormValidate(String login, String password) {
+    private String loginFormValidate(String login, String password, int loggedUserId) {
         HashMap<String, String> errors = new HashMap<>();
         errors.put("loginEmpty", "Логин не может быть пустым");
         errors.put("passwordEmpty", "Пароль не может быть пустым");
@@ -109,6 +112,7 @@ public class LoginServlet extends HttpServlet {
         HashMap<String, Object> responseData = new HashMap<>();
         HashMap<String, String> errorsToResponseData = new HashMap<>();
         LOGGER.info("LOGIN IS {}", login);
+        LOGGER.info("PASS IS {}", password);
         if (login.isEmpty()) {
             errorsToResponseData.put("loginEmpty", errors.get("loginEmpty"));
             LOGGER.info("LOGIN EMPTY");
@@ -123,9 +127,12 @@ public class LoginServlet extends HttpServlet {
             responseData.put("errors", errorsToResponseData);
             responseData.put("success", false);
         } else {
+            LOGGER.info("SUCCESS");
             responseData.put("success", true);
+            responseData.put("loggedUserId", loggedUserId);
         }
         Gson gson = new Gson();
+        LOGGER.info(gson.toJson(responseData));
         return gson.toJson(responseData);
     }
 }

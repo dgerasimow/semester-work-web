@@ -111,13 +111,13 @@
               <!--Login Form-->
               <form action="/login" method="post" name="login" id='login-form'>
                 <div class="row" id="login-row">
-                  <div class="form-group col-xs-12">
+                  <div id="login-from-login-form"class="form-group col-xs-12">
                     <label for="login-login" class="sr-only">Login</label>
                     <input id="login-login" class="form-control input-group-lg" type="text" name="login" title="Enter login" placeholder="Your login"/>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="form-group col-xs-12">
+                  <div id="password-from-login-form"class="form-group col-xs-12">
                     <label for="password-password" class="sr-only">Password</label>
                     <input id="password-password" class="form-control input-group-lg" type="password" name="password" title="Enter password" placeholder="Password"/>
                   </div>
@@ -162,6 +162,7 @@
   $(document).ready(function(){
     $('#login').submit( function(event)
     {
+      $(".error").remove();
       var loginData = {
         login: $("#login-login").val(),
         password: $("#password-password").val(),
@@ -179,11 +180,20 @@
         console.log(responseData);
         if (!responseData.success) {
           if(responseData.errors.loginEmpty) {
-            $("#login-row").append(
-                    '<div>' + responseData.errors.loginEmpty + '</div>'
-            );
-          } if(!responseData.errors.loginEmpty) {
+            $("#login-from-login-form").append(
+                    '<div class="error">' + responseData.errors.loginEmpty + '</div>'
+            )
+          } if(responseData.errors.passwordEmpty) {
+            $("#password-from-login-form").append(
+                    '<div class="error">' + responseData.errors.passwordEmpty + '</div>'
+            )
+          } if(responseData.errors.passwordTooShort) {
+            $("#password-from-login-form").append(
+                    '<div class="error">' + responseData.errors.passwordTooShort + '</div>'
+            )
           }
+        } else {
+          window.location.href = "/profile?id=" + responseData.loggedUserId;
         }
       }
       event.preventDefault();
