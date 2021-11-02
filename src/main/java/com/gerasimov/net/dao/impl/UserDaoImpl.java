@@ -20,6 +20,7 @@ public class UserDaoImpl implements Dao<User> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1,id);
             ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
             return new User(resultSet.getInt("id"),
                     resultSet.getString("first_name"),
                     resultSet.getString("second_name"),

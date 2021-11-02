@@ -36,6 +36,12 @@ public class Post {
         this.creationTime = creationTime;
     }
 
+    public Post(int creatorId, String postText, Timestamp creationTime) {
+        this.creatorId = creatorId;
+        this.postText = postText;
+        this.creationTime = creationTime;
+    }
+
     public String getCreatorFirstName() {
         return creatorFirstName;
     }

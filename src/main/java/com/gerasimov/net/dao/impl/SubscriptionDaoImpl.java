@@ -61,8 +61,49 @@ public class SubscriptionDaoImpl implements Dao<Subscription> {
         return null;
     }
 
+    public Subscription getSubsBySubscriberIdAndCreatorId(int subId, int creatorId) {
+        String sql = "select * from subscriptions_to_user_posts where subscriber_user_id = ? and creator_id = ?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, subId);
+            preparedStatement.setInt(2, creatorId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new Subscription(
+                        resultSet.getInt("id"),
+                        resultSet.getInt("subscriber_user_id"),
+                        resultSet.getInt("creator_id")
+                );
+            }
+        } catch (SQLException throwables) {
+            LOGGER.warn("Failed get sub with subid and creatorid", throwables);
+        }
+        return null;
+    }
+
     @Override
     public void save(Subscription subscription) {
+        String sql = "insert into subscriptions_to_user_posts (subscriber_user_id, creator_id) values (?,?);";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, subscription.getSubscriberId());
+            preparedStatement.setInt(2, subscription.getCreatorId());
+            preparedStatement.executeUpdate();
 
+        } catch (SQLException throwables) {
+            LOGGER.warn("Failed to save new subscription", throwables);
+        }
+    }
+
+    public void delete(Subscription subscription) {
+        String sql = "delete from subscriptions_to_user_posts where subscriber_user_id = ? and creator_id = ?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1,subscription.getSubscriberId());
+            preparedStatement.setInt(2,subscription.getCreatorId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

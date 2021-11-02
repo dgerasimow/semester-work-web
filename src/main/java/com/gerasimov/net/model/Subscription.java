@@ -11,6 +11,11 @@ public class Subscription {
         this.creatorId = creatorId;
     }
 
+    public Subscription(int subscriberId, int creatorId) {
+        this.subscriberId = subscriberId;
+        this.creatorId = creatorId;
+    }
+
     public int getId() {
         return id;
     }

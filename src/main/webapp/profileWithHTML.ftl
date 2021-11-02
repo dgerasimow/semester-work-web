@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <#include "base.ftl">
+<#--<head>-->
+<#--    <script>-->
+<#--        $("create-post-form").submit(function (e) {-->
+<#--            e.preventDefault();-->
+
+<#--            var form = $(this);-->
+<#--            var url = form.attr('action')-->
+
+<#--            $.ajax({-->
+<#--                type: "POST",-->
+<#--                url: url,-->
+<#--                data: form.serialize(),-->
+<#--                success: function(data)-->
+<#--                {-->
+<#--                    alert(data);-->
+<#--                }-->
+<#--            });-->
+<#--        });-->
+<#--    </script>-->
+<#--</head>-->
 <#macro title>My profile</#macro>
 <body>
 <#macro content>
@@ -19,13 +39,16 @@
                         <div class="profile-info">
                             <img src="http://placehold.it/300x300" alt="" class="img-responsive profile-photo" />
                             <h3>${user.firstName} ${user.secondName}</h3>
-                            <p class="text-muted">Creative Director</p>
+                            <p class="text-muted">Хуйлан че</p>
                         </div>
                     </div>
                     <div class="col-md-9">
+                        <ul class="list-inline profile-menu">
+                            <li><a href="/profile?id=${user.id}" class="active">Мои посты</a></li>
+                            <li><a href="/subs">Мои подписки</a></li>
+                        </ul>
                         <ul class="follow-me list-inline">
-                            <li>1,299 people following her</li>
-                            <li><button class="btn-primary">Add Friend</button></li>
+                            <li>1299 подписчиков</li>
                         </ul>
                     </div>
                 </div>
@@ -42,27 +65,25 @@
                     ================================================= -->
                     <div class="create-post">
                         <div class="row">
-                            <div class="col-md-7 col-sm-7">
-                                <div class="form-group">
-                                    <img src="http://placehold.it/300x300" alt="" class="profile-photo-md" />
-                                    <textarea name="texts" id="exampleTextarea" cols="30" rows="1" class="form-control" placeholder="Write what you wish"></textarea>
+                            <form action="/posts" method="POST" id="create-post-form" name="newPost_form">
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="form-group">
+                                        <img src="http://placehold.it/300x300" alt="" class="profile-photo-md" />
+                                        <textarea name="post-textarea" id="post-textarea" cols="30" rows="1" class="form-control" placeholder="Write what you wish" required form="create-post-form"></textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-5 col-sm-5">
-                                <div class="tools">
-                                    <button class="btn btn-primary pull-right">Publish</button>
+                                <div class="col-md-5 col-sm-5">
+                                    <div class="tools">
+                                        <input type="submit" class="btn btn-primary pull-right" id="create-post-button" form="create-post-form" value="Опубликовать"/>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div><!-- Post Create Box End-->
-                    <#if posts??>
-                        <#list posts as p>
+                    <#if userPosts??>
+                        <#list userPosts as p>
                     <div class="post-content">
 
-                        <div class="post-date hidden-xs hidden-sm">
-                            <h5>${user.firstName}</h5>
-                            <p class="text-grey">${p.creationTime}</p>
-                        </div>
 
                         <img src="http://placehold.it/1920x1280" alt="post-image" class="img-responsive post-image" />
                         <div class="post-container">
@@ -78,7 +99,7 @@
                                 </div>
                                 <div class="line-divider"></div>
                                 <div class="post-text">
-                                    <p>${p.postText}<i class="em em-anguished"></i> <i class="em em-anguished"></i> <i class="em em-anguished"></i></p>
+                                    <p>${p.postText}</p>
                                 </div>
                                 <div class="line-divider"></div>
                             </div>

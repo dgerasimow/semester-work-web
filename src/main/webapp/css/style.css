@@ -1148,7 +1148,7 @@ ul.online-users li span.online-dot{
   background: #f8f8f8;
   border-radius: 4px;
   width: 100%;
-  border: 1px solid #f1f2f2;
+  /*border: 1px solid #f1f2f2;*/
   margin-bottom: 20px;
   overflow: hidden;
   position: relative;
@@ -1625,7 +1625,7 @@ ul.online-users li span.online-dot{
   width: 1px;
   height: 98%;
   left: -145px;
-  border-left: 2px solid #8dc63f;
+  /*border-left: 2px solid #8dc63f;*/
   top: 15px;
 }
 
@@ -1974,7 +1974,7 @@ input:checked + .slider:before{
 
 #footer::before{
   content: "";
-  background: linear-gradient(to right, #ffffff 0%,#53cbf1 50%,#ffffff 100%);
+
   height: 5px;
   width: 100%;
   position: absolute;

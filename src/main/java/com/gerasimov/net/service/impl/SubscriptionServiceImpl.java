@@ -1,7 +1,7 @@
 package com.gerasimov.net.service.impl;
 
 import com.gerasimov.net.dao.impl.SubscriptionDaoImpl;
-import com.gerasimov.net.dto.PostDTO;
+
 import com.gerasimov.net.dto.SubscriptionDTO;
 import com.gerasimov.net.model.Subscription;
 import com.gerasimov.net.service.SubscriptionService;
@@ -33,11 +33,35 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public List<SubscriptionDTO> getAllPosts() {
+
         return null;
     }
 
-    @Override
-    public void createPost(PostDTO post) {
+    public SubscriptionDTO getSubsBySubscriberIdAndCreatorId (int subId, int creatorId) {
+        Subscription sub = dao.getSubsBySubscriberIdAndCreatorId(subId, creatorId);
+        if (sub == null) {
+            return null;
+        } else {
 
+            return new SubscriptionDTO(
+                    sub.getSubscriberId(),
+                    sub.getCreatorId()
+            );
+        }
+    }
+
+    @Override
+    public void save(SubscriptionDTO sub) {
+        dao.save(new Subscription(
+                sub.getSubscriberId(),
+                sub.getCreatorId()
+        ));
+    }
+
+    public void delete(SubscriptionDTO sub) {
+        dao.delete(new Subscription(
+                sub.getSubscriberId(),
+                sub.getCreatorId()
+        ));
     }
 }

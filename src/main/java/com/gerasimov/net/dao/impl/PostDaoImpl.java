@@ -67,6 +67,16 @@ public class PostDaoImpl implements Dao<Post> {
 
     @Override
     public void save(Post post) {
-
+        String sql = "INSERT INTO posts (creator_id, post_text, creation_time) VALUES (?,?,?);";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, post.getCreatorId());
+            preparedStatement.setString(2, post.getPostText());
+            preparedStatement.setTimestamp(3, post.getCreationTime());
+            preparedStatement.executeUpdate();
+            LOGGER.info("Saved new post");
+        } catch (SQLException throwables) {
+            LOGGER.warn("Failed saving new post", throwables);
+        }
     }
 }

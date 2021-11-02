@@ -36,6 +36,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void createPost(PostDTO post) {
-
+        dao.save(new Post(
+                post.getCreatorId(),
+                post.getPostText(),
+                post.getCreationTime()
+                )
+        );
     }
 }

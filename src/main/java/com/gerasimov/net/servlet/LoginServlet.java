@@ -1,7 +1,5 @@
 package com.gerasimov.net.servlet;
 
-import com.gerasimov.net.dto.PostWithCreatorNameDTO;
-import com.gerasimov.net.dto.SubscriptionDTO;
 import com.gerasimov.net.dto.UserDTO;
 import com.gerasimov.net.helper.PasswordHelper;
 import com.gerasimov.net.service.PostService;
@@ -10,6 +8,8 @@ import com.gerasimov.net.service.UserService;
 import com.gerasimov.net.service.impl.PostServiceImpl;
 import com.gerasimov.net.service.impl.SubscriptionServiceImpl;
 import com.gerasimov.net.service.impl.UserServiceImpl;
+
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,17 +17,36 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashMap;
 import java.util.Objects;
 
 @WebServlet(name = "loginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
     public static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!req.getSession().isNew()){
-            req.getRequestDispatcher("profileWithHTML.ftl").forward(req, resp);
+        UserService userService = new UserServiceImpl();
+        Cookie[] cookies = req.getCookies();
+        HttpSession session = req.getSession();
+
+        if (cookies != null && req.getSession(false).getAttribute("isAuth") == null) {
+            for (Cookie c: cookies) {
+                if (c.getName().equals("userId")){
+                    LOGGER.info("Нашел куку с именем {} и значением {}", c.getName(), c.getValue());
+                    session.setMaxInactiveInterval(60 * 60);
+                    UserDTO currentUser = userService.get(Integer.parseInt(c.getValue()));
+                    session.setAttribute("user", currentUser);
+                    session.setAttribute("isAuth", true);
+                }
+            }
+        }
+
+        if (req.getSession(false) != null && req.getSession().getAttribute("isAuth") != null) {
+            LOGGER.info("Redirecting to profile endpoint");
+            UserDTO currentUser = (UserDTO) session.getAttribute("user");
+            resp.sendRedirect("/profile?id=" + currentUser.getId());
         } else {
             resp.sendRedirect("loginWITHWERSTKA.html");
         }
@@ -43,39 +62,70 @@ public class LoginServlet extends HttpServlet {
         String password = req.getParameter("password");
 
         UserDTO user = userService.get(login);
-        if(user!=null) {
+        if (user != null) {
             LOGGER.info("пришел юзер {} с паролем {}", user.getLogin(), user.getPassword());
-//        пароль с энкриптингом
-            LOGGER.info("user password before encrypt [ {}]  after [ {}] ", password, PasswordHelper.encrypt("password"));
-        if (user.getLogin().equals(login) && Objects.equals(user.getPassword()
-                ,PasswordHelper.encrypt(password))) {
-            //пароль без энкриптинга
-//            if (user.getLogin().equals(login) && user.getPassword().equals(password)) {
+            if (user.getLogin().equals(login) && Objects.equals(user.getPassword()
+                    , PasswordHelper.encrypt(password))) {
+
                 LOGGER.info("User with username = {} logged in", login);
                 HttpSession session = req.getSession();
                 session.setMaxInactiveInterval(60 * 60);
-
-//                Cookie userCookie = new Cookie("username", login);
-//                userCookie.setMaxAge(24 * 60);
-//
-//                resp.addCookie(userCookie);
-                List<SubscriptionDTO> subs = subService.getAllBySubId(user.getId());
-                List<PostWithCreatorNameDTO> posts = new ArrayList<>();
-                for (SubscriptionDTO sub:subs) {
-                    posts.addAll(postService.getAllPostsFromSpecificUser(sub.getCreatorId()));
+                session.setAttribute("isAuth", true);
+                if (req.getParameter("remember-me-checkbox") != null) {
+                    Cookie userCookie = new Cookie("userId", Integer.toString(user.getId()));
+                    userCookie.setMaxAge(24 * 60);
+                    resp.addCookie(userCookie);
+                    LOGGER.info("создал куку с именем {} и значением {}",userCookie.getName(), userCookie.getValue());
                 }
 
-
                 session.setAttribute("user", user);
-                session.setAttribute("posts", posts);
-                resp.sendRedirect("/profileч");
-        } else {
+                resp.sendRedirect("/profile?id=" + user.getId());
+            } else {
                 LOGGER.info("Incorrect login or password");
-                resp.sendRedirect("/login");
+                req.getSession().setAttribute("isAuth", false);
+
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(loginFormValidate(login, password));
+
             }
         } else {
-            resp.sendRedirect("/login");
+            LOGGER.info("WHAT?");
+            req.getSession().setAttribute("isAuth", false);
+
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().write(loginFormValidate(login, password));
         }
 
+    }
+
+    private String loginFormValidate(String login, String password) {
+        HashMap<String, String> errors = new HashMap<>();
+        errors.put("loginEmpty", "Логин не может быть пустым");
+        errors.put("passwordEmpty", "Пароль не может быть пустым");
+        errors.put("passwordTooShort", "Пароль должен быть не менее 6 символов!");
+
+        HashMap<String, Object> responseData = new HashMap<>();
+        HashMap<String, String> errorsToResponseData = new HashMap<>();
+        LOGGER.info("LOGIN IS {}", login);
+        if (login.isEmpty()) {
+            errorsToResponseData.put("loginEmpty", errors.get("loginEmpty"));
+            LOGGER.info("LOGIN EMPTY");
+        }
+        if (password.isEmpty()) {
+            errorsToResponseData.put("passwordEmpty", errors.get("passwordEmpty"));
+        }
+        if (password.length() < 6) {
+            errorsToResponseData.put("passwordTooShort", errors.get("passwordTooShort"));
+        }
+        if (!errorsToResponseData.isEmpty()) {
+            responseData.put("errors", errorsToResponseData);
+            responseData.put("success", false);
+        } else {
+            responseData.put("success", true);
+        }
+        Gson gson = new Gson();
+        return gson.toJson(responseData);
     }
 }
