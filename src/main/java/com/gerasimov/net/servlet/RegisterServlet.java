@@ -53,7 +53,7 @@ public class RegisterServlet extends HttpServlet {
         errors.put("firstNameEmpty", "Имя не может быть пустым");
         errors.put("secondNameEmpty", "Фамилия не может быть пустым");
         errors.put("passwordEmpty", "Пароль не может быть пустым");
-        errors.put("passwordTooShort", "Пароль должен быть не менее 6 символов!");
+        errors.put("passwordRegexp", "Пароль должен быть не менее 6 символов, содержать одно число, спецсимвол, нижний и верхний регистр");
 
         HashMap<String, Object> responseData = new HashMap<>();
         HashMap<String, String> errorsToResponseData = new HashMap<>();
@@ -67,8 +67,8 @@ public class RegisterServlet extends HttpServlet {
         if (password.isEmpty()) {
             errorsToResponseData.put("passwordEmpty", errors.get("passwordEmpty"));
         }
-        if (password.length() < 6) {
-            errorsToResponseData.put("passwordTooShort", errors.get("passwordTooShort"));
+        if (!password.matches("(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}")) {
+            errorsToResponseData.put("passwordRegexp", errors.get("passwordRegexp"));
         }
         if (firstName.isEmpty()) {
             errorsToResponseData.put("firstNameEmpty", errors.get("firstNameEmpty"));

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommentDaoImpl implements Dao<Comment> {
-    public static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(CommentDaoImpl.class);
     private final Connection connection = PostgresConnectionHelper.getConnection();
     @Override
     public Comment get(int id) {
@@ -22,17 +22,18 @@ public class CommentDaoImpl implements Dao<Comment> {
     }
 
     public List<Comment> getCommentsByPost (int postId) {
-        String sql = "select * from comments where post_id = ?;";
+        String sql = "select c.*, u.first_name from comments c join users u on u.id = c.user_id where c.post_id = ?;";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, postId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Comment> comments = new ArrayList<>();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 comments.add(new Comment(
                         resultSet.getInt("post_id"),
-                        resultSet.getString("post_text"),
-                        resultSet.getInt("user_id")
+                        resultSet.getString("comment_text"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("first_name")
                 ));
             }
             return comments;
@@ -49,6 +50,15 @@ public class CommentDaoImpl implements Dao<Comment> {
 
     @Override
     public void save(Comment comment) {
-
+        String sql = "insert into comments (post_id, comment_text, user_id) values (?,?,?);";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, comment.getPost_id());
+            preparedStatement.setString(2, comment.getComment_text());
+            preparedStatement.setInt(3, comment.getUser_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwables) {
+            LOGGER.warn("Failed saving new comment", throwables);
+        }
     }
 }

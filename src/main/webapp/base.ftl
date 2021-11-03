@@ -28,24 +28,24 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index-register.html"><img src="images/logo.png" alt="logo" /></a>
+                <a class="navbar-brand" href="/login"><img src="images/logo.png" alt="logo" /></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right main-menu">
                     <li class="dropdown">
-                        <a href="/posts">Posts</a>
+                        <a href="/posts">Посты</a>
                     </li>
                     <li class="dropdown">
-                        <a href="/profile?id=${currentUserId}">My profile</a>
+                        <a href="/profile?id=${currentUserId}">Мой профиль</a>
                     </li>
-                    <li class="dropdown"><a href="/logout">Logout</a></li>
+                    <li class="dropdown"><a href="/logout">Выйти</a></li>
                 </ul>
                 <form class="navbar-form navbar-right hidden-sm">
                     <div class="form-group">
                         <i class="icon ion-android-search"></i>
-                        <input type="text" class="form-control" placeholder="Search friends, photos, videos">
+                        <input type="text" class="form-control" placeholder="Поиск людей">
                     </div>
                 </form>
             </div><!-- /.navbar-collapse -->
@@ -85,6 +85,7 @@
 <script src="js/jquery.scrollbar.min.js"></script>
 <script src="js/script.js"></script>
 <script src="js/newPost.js"></script>
+<script src="js/newComment.js"></script>
 
 </body>
 

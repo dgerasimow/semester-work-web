@@ -85,7 +85,7 @@
 
                     <div id="post"></div>
                     <#if userPosts??>
-                        <#list userPosts as p>
+                        <#list userPosts as p, c>
                     <div class="post-content">
                         <img src="http://placehold.it/1920x1280" alt="post-image" class="img-responsive post-image" />
                         <div class="post-container">
@@ -104,6 +104,23 @@
                                     <p>${p.postText}</p>
                                 </div>
                                 <div class="line-divider"></div>
+                                <#list c as comment>
+                                <div class="post-comment">
+                                    <img src="http://placehold.it/300x300" alt="" class="profile-photo-sm" />
+                                    <p><a href="timeline.html" class="profile-link">${comment.userFirstName} </a>${comment.comment_text}</p>
+                                </div>
+                                    <div class="line-divider"></div>
+                                </#list>
+                                <div id="last-divider"></div>
+                                <form method="POST" id="add-new-comment">
+                                <div class="post-comment">
+                                    <img src="http://placehold.it/300x300" alt="" class="profile-photo-sm" />
+                                    <input type="hidden" id="post-id" value="${p.id}">
+                                    <input type="hidden" id="user-id" value="${user.id}">
+                                    <input type="text" id="comment-text" name="comment-text" class="form-control" placeholder="Post a comment">
+                                    <input type="submit" class="btn btn-primary pull-right" value="Написать">
+                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>

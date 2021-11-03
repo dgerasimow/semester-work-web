@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CommentService {
     List<CommentDTO> getCommentsByPost(int postId);
+
+    void save(CommentDTO comment);
 }

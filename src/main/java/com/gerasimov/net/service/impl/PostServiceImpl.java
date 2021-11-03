@@ -25,7 +25,7 @@ public class PostServiceImpl implements PostService {
     public List<PostWithCreatorNameDTO> getAllPostsFromSpecificUser(int creatorId) {
         List<Post> posts = dao.getAllPostsFromSpecificUser(creatorId);
         return posts.stream()
-                .map(p -> new PostWithCreatorNameDTO(p.getCreatorId(), p.getPostText(), p.getCreationTime(), p.getCreatorName()))
+                .map(p -> new PostWithCreatorNameDTO(p.getId() ,p.getCreatorId(), p.getPostText(), p.getCreationTime(), p.getCreatorName()))
                 .collect(Collectors.toList());
     }
 

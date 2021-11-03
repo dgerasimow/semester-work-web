@@ -1,13 +1,12 @@
 package com.gerasimov.net.servlet;
 
 
-import com.gerasimov.net.dto.PostDTO;
-import com.gerasimov.net.dto.PostWithCreatorNameDTO;
-import com.gerasimov.net.dto.SubscriptionDTO;
-import com.gerasimov.net.dto.UserDTO;
+import com.gerasimov.net.dto.*;
+import com.gerasimov.net.service.CommentService;
 import com.gerasimov.net.service.PostService;
 import com.gerasimov.net.service.SubscriptionService;
 import com.gerasimov.net.service.UserService;
+import com.gerasimov.net.service.impl.CommentServiceImpl;
 import com.gerasimov.net.service.impl.PostServiceImpl;
 import com.gerasimov.net.service.impl.SubscriptionServiceImpl;
 import com.gerasimov.net.service.impl.UserServiceImpl;
@@ -35,21 +34,38 @@ public class PostsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         SubscriptionService subService = new SubscriptionServiceImpl();
         PostService postService = new PostServiceImpl();
-        HttpSession session = req.getSession();
-        UserDTO currentUser = (UserDTO) session.getAttribute("user");
-        LOGGER.info("Текущий пользователь: id {}", currentUser.getId());
-        List<SubscriptionDTO> subs = subService.getAllBySubId(currentUser.getId());
-        List<PostWithCreatorNameDTO> posts = new ArrayList<>();
-        for (SubscriptionDTO s : subs) {
-            posts.addAll(postService.getAllPostsFromSpecificUser(s.getCreatorId()));
-        }
-        LOGGER.info("Подписки текущего пользователя {}", subs);
-        LOGGER.info("Отображаемые посты пользователя {}", posts);
-        Collections.reverse(posts);
-        req.setAttribute("posts", posts);
-        req.setAttribute("currentUserId", currentUser.getId());
+        CommentService commentService = new CommentServiceImpl();
 
-        req.getRequestDispatcher("postsWithHTML.ftl").forward(req,resp);
+        HttpSession session = req.getSession(false);
+
+        if (session != null) {
+            UserDTO currentUser = (UserDTO) session.getAttribute("user");
+            LOGGER.info("Текущий пользователь: id {}", currentUser.getId());
+            List<SubscriptionDTO> subs = subService.getAllBySubId(currentUser.getId());
+            List<PostWithCreatorNameDTO> posts = new ArrayList<>();
+            for (SubscriptionDTO s : subs) {
+                posts.addAll(postService.getAllPostsFromSpecificUser(s.getCreatorId()));
+            }
+            HashMap<PostWithCreatorNameDTO, List<CommentDTO>> postAndCommentMap = new HashMap<>();
+
+            for (PostWithCreatorNameDTO p : posts) {
+                List<CommentDTO> comment = commentService.getCommentsByPost(p.getId());
+                if (comment != null) {
+                    postAndCommentMap.put(p, comment);
+                }
+            }
+
+            LOGGER.info("Подписки текущего пользователя {}", subs);
+            LOGGER.info("Отображаемые посты пользователя {}", posts);
+            Collections.reverse(posts);
+            req.setAttribute("user", currentUser);
+            req.setAttribute("posts", postAndCommentMap);
+            req.setAttribute("currentUserId", currentUser.getId());
+
+            req.getRequestDispatcher("postsWithHTML.ftl").forward(req, resp);
+        } else {
+            resp.sendRedirect("/login");
+        }
     }
 
     @Override

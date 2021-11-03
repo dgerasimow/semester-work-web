@@ -15,6 +15,13 @@ public class Comment {
         this.user_id = user_id;
     }
 
+    public Comment(int post_id, String comment_text, int user_id, String userFirstName) {
+        this.post_id = post_id;
+        this.comment_text = comment_text;
+        this.user_id = user_id;
+        this.userFirstName = userFirstName;
+    }
+
     public Comment(int post_id, String comment_text, int user_id) {
         this.post_id = post_id;
         this.comment_text = comment_text;

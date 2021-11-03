@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +24,21 @@ public class SubsServlet extends HttpServlet {
     public static final Logger LOGGER = LoggerFactory.getLogger(SubsServlet.class);
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserDTO currentUser = (UserDTO) req.getSession().getAttribute("user");
-        SubscriptionService subsService = new SubscriptionServiceImpl();
-        UserService userService = new UserServiceImpl();
-        List<SubscriptionDTO> subs = subsService.getAllBySubId(currentUser.getId());
-        List<UserDTO> subsUsers = new ArrayList<>();
-        for (SubscriptionDTO s: subs) {
-            subsUsers.add(userService.get(s.getCreatorId()));
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            UserDTO currentUser = (UserDTO) req.getSession().getAttribute("user");
+            SubscriptionService subsService = new SubscriptionServiceImpl();
+            UserService userService = new UserServiceImpl();
+            List<SubscriptionDTO> subs = subsService.getAllBySubId(currentUser.getId());
+            List<UserDTO> subsUsers = new ArrayList<>();
+            for (SubscriptionDTO s : subs) {
+                subsUsers.add(userService.get(s.getCreatorId()));
+            }
+            req.setAttribute("subs", subsUsers);
+            req.setAttribute("currentUserId", currentUser.getId());
+            req.getRequestDispatcher("subsList.ftl").forward(req, resp);
+        } else {
+            resp.sendRedirect("/login");
         }
-        req.setAttribute("subs", subsUsers);
-        req.setAttribute("currentUserId", currentUser.getId());
-        req.getRequestDispatcher("subsList.ftl").forward(req,resp);
     }
 }

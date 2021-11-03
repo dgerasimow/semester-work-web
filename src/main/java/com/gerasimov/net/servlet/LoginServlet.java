@@ -107,7 +107,7 @@ public class LoginServlet extends HttpServlet {
         HashMap<String, String> errors = new HashMap<>();
         errors.put("loginEmpty", "Логин не может быть пустым");
         errors.put("passwordEmpty", "Пароль не может быть пустым");
-        errors.put("passwordTooShort", "Пароль должен быть не менее 6 символов!");
+        errors.put("passwordRegexp", "Пароль должен быть не менее 6 символов, содержать одно число, спецсимвол, нижний и верхний регистр");
 
         HashMap<String, Object> responseData = new HashMap<>();
         HashMap<String, String> errorsToResponseData = new HashMap<>();
@@ -120,16 +120,17 @@ public class LoginServlet extends HttpServlet {
         if (password.isEmpty()) {
             errorsToResponseData.put("passwordEmpty", errors.get("passwordEmpty"));
         }
-        if (password.length() < 6) {
-            errorsToResponseData.put("passwordTooShort", errors.get("passwordTooShort"));
+        if (!password.matches("(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}")) {
+            errorsToResponseData.put("passwordRegexp", errors.get("passwordRegexp"));
+        }
+        else {
+            LOGGER.info("SUCCESS");
+            responseData.put("success", true);
+            responseData.put("loggedUserId", loggedUserId);
         }
         if (!errorsToResponseData.isEmpty()) {
             responseData.put("errors", errorsToResponseData);
             responseData.put("success", false);
-        } else {
-            LOGGER.info("SUCCESS");
-            responseData.put("success", true);
-            responseData.put("loggedUserId", loggedUserId);
         }
         Gson gson = new Gson();
         LOGGER.info(gson.toJson(responseData));

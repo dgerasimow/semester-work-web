@@ -16,7 +16,18 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDTO> getCommentsByPost(int postId) {
         List<Comment> comments = dao.getCommentsByPost(postId);
         return comments.stream()
-                .map(c -> new CommentDTO(c.getPost_id(), c.getComment_text(), c.getUser_id()))
+                .map(c -> new CommentDTO(c.getPost_id(), c.getComment_text(), c.getUser_id(), c.getUserFirstName()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void save(CommentDTO comment) {
+        dao.save(new Comment(
+                comment.getPostId(),
+                comment.getComment_text(),
+                comment.getUser_id()
+        ));
+    }
+
+
 }

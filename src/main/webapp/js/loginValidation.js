@@ -26,9 +26,9 @@ $(document).ready(function(){
                     $("#password-from-login-form").append(
                         '<div class="error">' + responseData.errors.passwordEmpty + '</div>'
                     )
-                } if(responseData.errors.passwordTooShort) {
+                } if(responseData.errors.passwordRegexp) {
                     $("#password-from-login-form").append(
-                        '<div class="error">' + responseData.errors.passwordTooShort + '</div>'
+                        '<div class="error">' + responseData.errors.passwordRegexp + '</div>'
                     )
                 }
             } else {
