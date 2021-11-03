@@ -69,6 +69,7 @@
                                 <div class="col-md-7 col-sm-7">
                                     <div class="form-group">
                                         <img src="http://placehold.it/300x300" alt="" class="profile-photo-md" />
+                                        <input name="userId" id="userId" type="hidden" value="${user.id}">
                                         <textarea name="post-textarea" id="post-textarea" cols="30" rows="1" class="form-control" placeholder="Write what you wish" required form="create-post-form"></textarea>
                                     </div>
                                 </div>
@@ -79,12 +80,13 @@
                                 </div>
                             </form>
                         </div>
-                    </div><!-- Post Create Box End-->
+                    </div>
+                    <!-- Post Create Box End-->
+
+                    <div id="post"></div>
                     <#if userPosts??>
                         <#list userPosts as p>
                     <div class="post-content">
-
-
                         <img src="http://placehold.it/1920x1280" alt="post-image" class="img-responsive post-image" />
                         <div class="post-container">
                             <img src="http://placehold.it/300x300" alt="user" class="profile-photo-md pull-left" />
@@ -113,7 +115,9 @@
             </div>
         </div>
         </#if>
-
+    </div>
 </#macro>
+</div>
 </body>
+
 </html>

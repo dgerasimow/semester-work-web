@@ -84,6 +84,7 @@
 <script src="js/jquery.sticky-kit.min.js"></script>
 <script src="js/jquery.scrollbar.min.js"></script>
 <script src="js/script.js"></script>
+<script src="js/newPost.js"></script>
 
 </body>
 

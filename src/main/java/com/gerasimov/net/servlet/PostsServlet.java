@@ -11,6 +11,7 @@ import com.gerasimov.net.service.UserService;
 import com.gerasimov.net.service.impl.PostServiceImpl;
 import com.gerasimov.net.service.impl.SubscriptionServiceImpl;
 import com.gerasimov.net.service.impl.UserServiceImpl;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @WebServlet(name = "postsServlet", urlPatterns = "/posts")
@@ -59,10 +61,27 @@ public class PostsServlet extends HttpServlet {
         LOGGER.info("TEXT FROM TEXTAREA {}",req.getParameter("post-textarea"));
         PostDTO newPost = new PostDTO(
                 currentUser.getId(),
-                req.getParameter("post-textarea"),
+                req.getParameter("postText"),
                 new Timestamp(System.currentTimeMillis())
         );
         postService.createPost(newPost);
-        resp.sendRedirect("/profile?id=" + currentUser.getId());
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write(makeNewPostJson(currentUser.getFirstName(), currentUser.getSecondName(),
+                req.getParameter("postText"),new Timestamp(System.currentTimeMillis())));
+//        resp.sendRedirect("/profile?id=" + currentUser.getId());
+    }
+
+    private String makeNewPostJson(String creatorFirstName, String creatorSecondName, String postText, Timestamp creationTime) {
+        HashMap<String, Object> responseDataMap = new HashMap<>();
+        responseDataMap.put("success", true);
+        responseDataMap.put("first_name", creatorFirstName);
+        responseDataMap.put("second_name", creatorSecondName);
+        responseDataMap.put("post_text", postText);
+        responseDataMap.put("creation_time", creationTime);
+        LOGGER.info("postText {}",postText);
+        Gson gson = new Gson();
+        return gson.toJson(responseDataMap);
     }
 }
